@@ -223,11 +223,12 @@ function create_config( )
     "invite",
     "all",
     "leave_ban",
+    "plugins",
 	"supergroup",
 	"whitelist",
 	"msg_checks"
     },
-    sudo_users = {110626080,103649648,111020322,0,tonumber(our_id)},--Sudo users
+    sudo_users = {120816252,147191022},--Sudo users
     moderation = {data = 'data/moderation.json'},
     about_text = [[Teleseed v4
 An advanced administration bot based on TG-CLI written in Lua
