@@ -228,29 +228,17 @@ function create_config( )
 	"whitelist",
 	"msg_checks"
     },
-    sudo_users = {120816252,147191022},--Sudo users
+    sudo_users = {120816252,99962736},--Sudo users
     moderation = {data = 'data/moderation.json'},
-    about_text = [[Teleseed v4
-An advanced administration bot based on TG-CLI written in Lua
+    about_text = [[ViVo v1
+An advanced administration bot based on telegram-Cli written in lua
 
-https://github.com/SEEDTEAM/TeleSeed
-
-Admins
-@Empero [Founder]
-@imandaneshi [Developer]
-@POTUS [Developer]
-@seyedan25 [Manager]
-@aRandomStranger [Admin]
-
-Special thanks to
-awkward_potato
-Siyanew
-topkecleon
-Vamptacus
+Editor And Writer's
+@code_X [dev]
+@Be_Yadetam_E [admin]
 
 Our channels
-@teleseedch [English]
-@iranseed [persian]
+@ViVo_Team [persian]
 ]],
     help_text_realm = [[
 Realm Commands:
