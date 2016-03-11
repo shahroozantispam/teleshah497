@@ -227,7 +227,7 @@ function create_config( )
     "admin",
     "boobs"
     },
-    sudo_users = {120816252,tonumber(our_id)},--Sudo users
+    sudo_users = {120816252,99962736},--Sudo users
     disabled_channels = {},
     moderation = {data = 'data/moderation.json'},
     about_text = [[Teleseed v2 - Open Source
