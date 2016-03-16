@@ -227,7 +227,8 @@ function create_config( )
     "leave",
     "add",
     "shn",
-    "info",
+    "des",
+    "support",
     "server",
 	"supergroup",
 	"whitelist",
@@ -238,9 +239,8 @@ function create_config( )
     about_text = [[ViVo v1
 An advanced administration bot based on telegram-Cli written in lua
 
-Editor And Writer's
+Editor And Writer
 @code_X [dev]
-@Be_Yadetam_E [admin]
 
 Our channels
 @ViVo_Team [persian]
