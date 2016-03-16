@@ -224,6 +224,11 @@ function create_config( )
     "all",
     "leave_ban",
     "plugins",
+    "leave",
+    "add",
+    "shn",
+    "info",
+    "server",
 	"supergroup",
 	"whitelist",
 	"msg_checks"
