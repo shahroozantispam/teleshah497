@@ -1549,7 +1549,7 @@ if msg.to.type == 'chat' then
         return "only for the owner!"
       end
       if type(msg.reply_id)~="nil" then
-          msgr = get_message(msg.reply_id, setowner_by_reply, false)
+          msgr = get_message(msg.reply_id, setowner_by_reply, true)
       end
     end
 end
@@ -1576,8 +1576,8 @@ end
       if not is_momod(msg) then
         return "For moderators only!"
       end
-      if tonumber(matches[2]) < 5 or tonumber(matches[2]) > 20 then
-        return "Wrong number,range is [5-20]"
+      if tonumber(matches[2]) < 1 or tonumber(matches[2]) > 100 then
+        return "Wrong number,range is [1-100]"
       end
       local flood_max = matches[2]
       data[tostring(msg.to.id)]['settings']['flood_msg_max'] = flood_max
