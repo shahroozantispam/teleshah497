@@ -1,143 +1,87 @@
-local function save_filter(msg, name, value)
-	local hash = nil
-	if msg.to.type == 'channel' then
-		hash = 'chat:'..msg.to.id..':filters'
-	end
-	if msg.to.type == 'user' then
-		return 'SUPERGROUPS only'
-	end
-	if hash then
-		redis:hset(hash, name, value)
-		return "Successfull!"
-	end
+do
+local function block_word(receiver, wordblock)
+    local chat_id = string.gsub(receiver, '.+#id', '')
+    local data = load_data(_config.moderation.data)
+    data[tostring(chat_id)]['blocked_words'][(wordblock)] = true
+    save_data(_config.moderation.data, data)
+    send_large_msg(receiver, wordblock..'has been locked')
 end
 
-local function get_filter_hash(msg)
-	if msg.to.type == 'channel' then
-		return 'chat:'..msg.to.id..':filters'
-	end
-end 
-
-local function list_filter(msg)
-	if msg.to.type == 'user' then
-		return 'SUPERGROUPS only'
-	end
-	local hash = get_filter_hash(msg)
-	if hash then
-		local names = redis:hkeys(hash)
-		local text = 'Sencured Wordes:\n\n'
-		for i=1, #names do
-			text = text..'➡️ '..names[i]..'\n'
-		end
-		return text
-	end
+local function unblock_word(receiver, wordblock)
+    local chat_id = string.gsub(receiver, '.+#id', '')
+    local data = load_data(_config.moderation.data)
+    if data[tostring(chat_id)]['blocked_words'][wordblock] then
+        data[tostring(chat_id)]['blocked_words'][(wordblock)] = nil
+        save_data(_config.moderation.data, data)
+        send_large_msg(receiver, wordblock..' has been unlocked')
+    else
+        --send_large_msg(receiver, 'Word "'..wordblock..'" isn\'t in lock list.')
+    end
 end
-
-local function get_filter(msg, var_name)
-	local hash = get_filter_hash(msg)
-	if hash then
-		local value = redis:hget(hash, var_name)
-		if value == 'msg' then
-					delete_msg(msg.id, ok_cb, false)
-			return 'WARNING!\nDon\'nt Use it!'
-		elseif value == 'kick' then
-			send_large_msg('channel#id'..msg.to.id, "BaBye")
-			channel_kick_user('channel#id'..msg.to.id, 'user#id'..msg.from.id, ok_cb, true)
-						delete_msg(msg.id, ok_cb, false)
-		end
-	end
-end
-
-local function get_filter_act(msg, var_name)
-	local hash = get_filter_hash(msg)
-	if hash then
-		local value = redis:hget(hash, var_name)
-		if value == 'msg' then
-			return 'Warning'
-		elseif value == 'kick' then
-			return 'Kick YOU'
-		elseif value == 'none' then
-			return 'Out of filter'
-		end
-	end
+local function is_word_allowed(chat_id,text)
+  local var = true
+  local data = load_data(_config.moderation.data)
+  if not data[tostring(chat_id)] then
+      return true
+  end
+  local wordlist = ''
+  if data[tostring(chat_id)]['blocked_words'] then
+    for k,v in pairs(data[tostring(chat_id)]['blocked_words']) do 
+        if string.find(string.lower(text), string.lower(k)) then
+            return false
+        end
+    end
+  end
+  return var
 end
 
 local function run(msg, matches)
-	local data = load_data(_config.moderation.data)
-	if matches[1] == "filterlist" then
-		return list_filter(msg)
-	elseif matches[1] == "filter" and matches[2] == "war1324jadlkhrou2aisn" then
-		if data[tostring(msg.to.id)] then
-			local settings = data[tostring(msg.to.id)]['settings']
-			if not is_momod(msg) then
-				return "You Are Not MOD"
-			else
-				local value = 'msg'
-				local name = string.sub(matches[3]:lower(), 1, 1000)
-				local text = save_filter(msg, name, value)
-				return text
-			end
-		end
-	elseif matches[1] == "filter" and matches[2] == "in" then
-		if data[tostring(msg.to.id)] then
-			local settings = data[tostring(msg.to.id)]['settings']
-			if not is_momod(msg) then
-				return "You Are Not MOD"
-			else
-				local value = 'kick'
-				local name = string.sub(matches[3]:lower(), 1, 1000)
-				local text = save_filter(msg, name, value)
-				return text
-			end
-		end
-	elseif matches[1] == "filter" and matches[2] == "out" then
-		if data[tostring(msg.to.id)] then
-			local settings = data[tostring(msg.to.id)]['settings']
-			if not is_momod(msg) then
-				return "You Are Not MOD"
-			else
-				local value = 'none'
-				local name = string.sub(matches[3]:lower(), 1, 1000)
-				local text = save_filter(msg, name, value)
-				return text
-			end
-		end
-		
-			elseif matches[1] == "filter" and matches[2] == "clean" then
-		if data[tostring(msg.to.id)] then
-			local settings = data[tostring(msg.to.id)]['settings']
-			if not is_momod(msg) then
-				return "You Are Not MOD"
-			else
-				local value = 'none'
-				local name = string.sub(matches[3]:lower(), 1, 1000)
-				local text = save_filter(msg, name, value)
-				return text
-			end
-		end
-		
-	elseif matches[1] == "filter" and matches[2] == "about" then
-		return get_filter_act(msg, matches[3]:lower())
-	else
-		if is_sudo(msg) then
-			return
-		elseif is_admin(msg) then
-			return
-		elseif is_momod(msg) then
-			return
-		elseif tonumber(msg.from.id) == tonumber(our_id) then
-			return
-		else
-			return get_filter(msg, msg.text:lower())
-		end
-	end
+  local data = load_data(_config.moderation.data)
+  local receiver = get_receiver(msg)
+  if matches[1] == "lockw" then 
+    if not is_momod(msg) then
+      return "For mods only"
+    end
+    return block_word(receiver, matches[2])
+  end
+  if matches[1] == "unlockw" then
+    if not is_momod(msg) then
+      return "For mods only"
+    end
+    return unblock_word(receiver, matches[2])
+  end
+  if msg.text then
+    if not is_word_allowed(msg.to.id, msg.text) then
+      delete_msg(msg.id, ok_cb, true)
+    end
+  end
+  if matches[1] == "wlist" then
+    local text = 'Lock word for ['..msg.to.title..']:\n\n'
+    local i = 1
+    for k,v in pairs(data[tostring(msg.to.id)]['blocked_words']) do
+      text = text ..i..'- '..k..'\n'
+      i = i + 1
+    end 
+    return text
+  end
 end
 
+local function pre_process(msg)
+  if is_word_allowed(msg.to.id,msg.text) and is_momod(msg) then
+    print("word alowed")
+  else
+    print('not allowed')
+    delete_msg(msg.id, ok_cb, false)
+  end
+  return msg
+end
 return {
-	patterns = {
-		"^[!/][Ff](ilter) (.+) (.*)$",
-		"^[!/][Ff](ilterlist)$",
-		"(.*)",
-	},
-	run = run
+  patterns = {
+    "^[/!#](lockw) (.*)$",
+    "^[/!#](unlockw) (.*)$",
+    "^[/!#](wlist)$"
+  },
+  run = run,
+  pre_process = pre_process
 }
+end
