@@ -478,54 +478,54 @@ local function cb_user_info(cb_extra, success, result)
 	else
 		username = "@[none]"
 	end
-	text = "User Info:\n\nID: "..result.peer_id.."\nFirst: "..first_name.."\nLast: "..last_name.."\nUsername: "..username
+	text = "User Info:\n\nID: "..result.peer_id.."\nFirst: "..first_name.."\nLast: "..last_name.."\nUsername: "..username..""\nGroup name:"..group_name
 	send_large_msg(receiver, text)
 end
 
-local function admin_promote(msg, admin_id)
+local function sudo_promote(msg, sudo_id)
 	if not is_sudo(msg) then
         return "Access denied!"
     end
-	local admins = 'admins'
-	if not data[tostring(admins)] then
+	local sudoers = 'sudoers'
+	if not data[tostring(sudoers)] then
 		data[tostring(admins)] = {}
 		save_data(_config.moderation.data, data)
 	end
-	if data[tostring(admins)][tostring(admin_id)] then
-		return admin_id..' is already an admin.'
+	if data[tostring(admins)][tostring(sudo_id)] then
+		return sudo_id..' is already an sudo.'
 	end
-	data[tostring(admins)][tostring(admin_id)] = admin_id
+	data[tostring(sudoers)][tostring(sudo_id)] = sudo_id
 	save_data(_config.moderation.data, data)
-	return admin_id..' has been promoted as admin.'
+	return sudo_id..' has been promoted as sudo.'
 end
 
-local function admin_demote(msg, admin_id)
+local function sudo_demote(msg, sudo_id)
     if not is_sudo(msg) then
         return "Access denied!"
     end
     local data = load_data(_config.moderation.data)
-        local admins = 'admins'
-	if not data[tostring(admins)] then
-		data[tostring(admins)] = {}
+        local sudoers = 'sudoera'
+	if not data[tostring(sudoers)] then
+		data[tostring(sudoers)] = {}
 		save_data(_config.moderation.data, data)
 	end
-	if not data[tostring(admins)][tostring(admin_id)] then
-		return admin_id..' is not an admin.'
+	if not data[tostring(sudoers)][tostring(sudo_id)] then
+		return sudo_id..' is not an sudo.'
 	end
-	data[tostring(admins)][tostring(admin_id)] = nil
+	data[tostring(sudoers)][tostring(sudo_id)] = nil
 	save_data(_config.moderation.data, data)
-	return admin_id..' has been demoted from admin.'
+	return sudo_id..' has been demoted from sudo.'
 end
 
 local function admin_list(msg)
     local data = load_data(_config.moderation.data)
-	local admins = 'admins'
-	if not data[tostring(admins)] then
-		data[tostring(admins)] = {}
+	local sudoers = 'sudoers'
+	if not data[tostring(sudoers)] then
+		data[tostring(sudoers)] = {}
 		save_data(_config.moderation.data, data)
 	end
 	local message = 'List of global admins:\n'
-	for k,v in pairs(data[tostring(admins)]) do
+	for k,v in pairs(data[tostring(sudoers)]) do
 		message = message .. '- (at)' .. v .. ' [' .. k .. '] ' ..'\n'
 	end
 	return message
