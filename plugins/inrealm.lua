@@ -478,7 +478,7 @@ local function cb_user_info(cb_extra, success, result)
 	else
 		username = "@[none]"
 	end
-	text = "User Info:\n\nID: "..result.peer_id.."\nFirst: "..first_name.."\nLast: "..last_name.."\nUsername: "..username..""\nGroup name:"..group_name
+	text = "User Info:\n\nID: "..result.peer_id.."\nFirst: "..first_name.."\nLast: "..last_name.."\nUsername: "..username.."\nGroup name: "..group_name
 	send_large_msg(receiver, text)
 end
 
